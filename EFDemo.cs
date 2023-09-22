@@ -32,7 +32,7 @@ namespace EFCoreUTN
         {
 
             var context = new EFUserContext();
-            user.Rol = context.Roles.FirstOrDefault(r=> r.Id== user.Rol.Id);
+            user.Rol = context.Roles.FirstOrDefault(r => r.Id == user.Rol.Id);
             context.Usuarios.Add(user);
             context.SaveChanges();
             return user;
@@ -43,7 +43,7 @@ namespace EFCoreUTN
         {
             var context = new EFUserContext();
 
-            return (from u in context.Usuarios.Include(u=> u.Domicilios).Include(u=>u.Rol)
+            return (from u in context.Usuarios.Include(u => u.Domicilios).Include(u => u.Rol)
                     where u.Id == id
                     select u).FirstOrDefault();
 
@@ -74,8 +74,8 @@ namespace EFCoreUTN
         {
 
             var context = new EFUserContext();
-            var usuario = context.Usuarios.Include(u=>u.Domicilios).FirstOrDefault(u => u.Id == usuarioId);
-            
+            var usuario = context.Usuarios.Include(u => u.Domicilios).FirstOrDefault(u => u.Id == usuarioId);
+
             context.Usuarios.Remove(usuario);
             context.SaveChanges();
 
@@ -86,22 +86,24 @@ namespace EFCoreUTN
 
             var context = new EFUserContext();
 
-            var consulta1 = from u in context.Usuarios.Include(us => us.Domicilios).Include(us => us.Rol)
+            var consulta1 = (from u in context.Usuarios
+                             where u.Id == 15
+                             select u).FirstOrDefault();
+
+            var consulta2 = from u in context.Usuarios.Include(us => us.Domicilios).Include(us => us.Rol)
                             where u.Domicilios.Count > 2
                             select u;
 
-            consulta1.ToList().ForEach(u => Console.WriteLine(u.ToString()));
-
-            var consulta2 = (from u in context.Usuarios.Include(us => us.Domicilios).Include(us => us.Rol)
-                             from d in u.Domicilios
-                             where d.Numero > 5000
-                             select u);
-
             consulta2.ToList().ForEach(u => Console.WriteLine(u.ToString()));
 
-            var consulta3 = (from u in context.Usuarios
-                             where u.Id == 15
-                             select u).FirstOrDefault();
+            var consulta3 = (from u in context.Usuarios.Include(us => us.Rol)
+                             from d in u.Domicilios
+                             where d.Numero > 5000
+                             select u).OrderBy(u=>u.Id).Distinct();
+
+            consulta3.ToList().ForEach(u => Console.WriteLine(u.ToString()));
+
+
 
 
         }

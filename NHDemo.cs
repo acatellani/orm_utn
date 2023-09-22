@@ -2,6 +2,7 @@ using System.Reflection.Metadata;
 using System.Globalization;
 using NHibernate;
 using EFCoreUTN.Entities;
+using NHibernate.Linq;
 
 namespace EFCoreUTN
 {
@@ -88,23 +89,54 @@ namespace EFCoreUTN
 
         }
 
+        public static void ConsultasVariasUsuarioHQL()
+        {
+
+            using (ISession session = sessionFactory.OpenSession())
+            {
+
+                var consulta1 = session.CreateQuery("from Usuario as us where us.Id = ?")
+                .SetInt32(0, 15)
+                .List<Usuario>();
+                Console.WriteLine(consulta1.FirstOrDefault());
+
+                //var consulta2 = session.CreateQuery("from Usuario as us where (SELECT count(dom) from Domicilio as dom WHERE dom.UsuarioId = us.Id) > :cantidad")
+
+                var consulta2 = session.CreateQuery("from Usuario as us where size(us.Domicilios) > :cantidad")
+                .SetInt32("cantidad", 2)
+                .List<Usuario>();
+                consulta2.ToList().ForEach(u => Console.WriteLine(u));
+
+                var consulta3 = session.CreateQuery("select distinct us from Usuario as us inner join us.Domicilios as dom where dom.Numero > 5000 order by us.Id")
+                .List<Usuario>();
+
+                consulta3.ToList().ForEach(u => Console.WriteLine(u));
+
+            }
+        }
+
         public static void ConsultasVariasUsuario()
         {
 
             using (ISession session = sessionFactory.OpenSession())
             {
 
-                var consulta4 = session.CreateQuery("from Rol as rol where rol.Id > ?")
-                .SetInt32(0, 2)
-                .List<Rol>();
+                var consulta1 = session.Query<Usuario>()
+                                .Where(u => u.Id == 15)
+                                .FirstOrDefault();
+                Console.WriteLine(consulta1);
 
-                consulta4.ToList().ForEach(u => Console.WriteLine(u.ToString()));
+                var consulta2 = session.Query<Usuario>()
+                                .Where(u => u.Domicilios.Count > 2);
 
-                var consulta5 = session.CreateQuery("from Usuario as us inner join fetch us.Domicilios where us.Id = :id")
-                .SetInt32("id", 5)
-                .List<Usuario>();
+                consulta2.ToList().ForEach(u => Console.WriteLine(u.ToString()));
 
-                consulta5.ToList().ForEach(u => u.ToString());
+                var consulta3 = session.Query<Usuario>()
+                                 .Where(u => u.Domicilios.Any(d => d.Numero > 5000))
+                                 .OrderBy(u => u.Id)
+                                 .Distinct();
+
+                consulta3.ToList().ForEach(u => Console.WriteLine(u.ToString()));
 
             }
         }

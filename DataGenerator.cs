@@ -1,6 +1,6 @@
-using Bogus;
 using EfCoreUTN;
 using EFCoreUTN.Entities;
+using Bogus;
 
 namespace EFCoreUTN
 {
@@ -21,7 +21,6 @@ namespace EFCoreUTN
 
         public static (IList<Rol>, IList<Usuario>) GenerateFakeData(int amount)
         {
-
             int roleNameIndex = 0;
             var roleNames = new[] { "Admin", "User", "Developer", "DBAdmin", "Owner" };
 
@@ -31,11 +30,11 @@ namespace EFCoreUTN
 
             var roles = rolGen.GenerateBetween(5, 5);
 
-            var randNumber = new Random();
+            var randNumber = new Random(DateTime.Now.Millisecond);
 
             var dirGen = new Faker<Domicilio>()
             .RuleFor(d => d.Calle, f => f.Address.StreetName())
-            .RuleFor(d => d.Numero, randNumber.Next(0, 9999));
+            .RuleFor(d => d.Numero, f=> f.Random.Number(0,9999));
 
             var userGen = new Faker<Usuario>()
             .RuleFor(d => d.Nombre, f => f.Internet.UserName())

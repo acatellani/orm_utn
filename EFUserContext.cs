@@ -25,11 +25,11 @@ namespace EfCoreUTN
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlite("Filename=UsersDB.sqlite").LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            optionsBuilder.UseSqlite("Filename=UsersDB.sqlite").LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
 
 
-            optionsBuilder.UseSqlServer(
-            @"Server=LOCALHOST\SQLEXPRESS19;Database=EFUserDB;Trusted_Connection=True").LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            /*optionsBuilder.UseSqlServer(
+            @"Server=LOCALHOST\SQLEXPRESS19;Database=EFUserDB;Trusted_Connection=True").LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);*/
 
             base.OnConfiguring(optionsBuilder);
 
